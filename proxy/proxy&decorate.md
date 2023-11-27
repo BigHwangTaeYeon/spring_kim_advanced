@@ -27,12 +27,27 @@ Client  >   Proxy1  >   Proxy2  >   Server
 
 GOF 디자인 패턴
 의도(intent)에 따라 프록시 패턴과 데코레이터 패턴으로 구분된다.
-프록시 패턴 : 접근 제어가 목적
-데코레이터 패턴 : 새로운 기능 추가가 목적
+프록시 패턴 : 접근 제어가 목적 (다른 객체에 대한 접근 제어를 위한 대리자를 제공)
+데코레이터 패턴 : 새로운 기능 추가가 목적 (객체에 추가 책임(기능)을 동적으로 추가하고 확장을 위한 유연한 대안 제공)
 
-
-
-
+Decorator Pattern은 내부에 호출 대상인 Component를 가지고 있어야 한다.
+```java
+    class TimeDecorator {
+        private Component component;
+        
+        public TimeDecorator(Component component) {
+            this.component = component;
+        }
+    }
+    class MessageDecorator {
+        private Component component;
+        
+        public MessageDecorator(Component component) {
+            this.component = component;
+        }
+    }
+```
+위 와 같이 공통 부분을 추상클래스로 만들어 사용도 가능하다.
 
 
 
