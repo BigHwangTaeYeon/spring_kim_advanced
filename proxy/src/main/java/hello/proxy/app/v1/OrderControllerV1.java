@@ -13,6 +13,6 @@ public interface OrderControllerV1 {
     String request(@RequestParam("itemId") String itemId);
     
     @GetMapping("/v1/no-log")
-    String noLong();
+    String noLog();
     
 }
