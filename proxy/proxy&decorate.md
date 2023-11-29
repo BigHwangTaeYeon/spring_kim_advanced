@@ -49,8 +49,28 @@ Decorator Pattern은 내부에 호출 대상인 Component를 가지고 있어야
 ```
 위 와 같이 공통 부분을 추상클래스로 만들어 사용도 가능하다.
 
+V1 interface
+V2 class
+V3 Component scan
 
 
+V2, 클레스 기반 프록시의 단점
+```java
+public OrderServiceConcreteProxy(OrderRepositoryV2 orderRepository, OrderServiceV2 target, LogTrace logTrace) {
+    // Proxy로 사용하기에 상위 데이터를 가져올 필요가 없으므로 null값으로 정의한다.
+    super(null);
+    this.target = target;
+    this.logTrace = logTrace;
+}
 
+class ConcreteProxyConfig
+    @Bean
+    public OrderControllerV2 orderControllerV2(LogTrace logTrace) {
+        OrderControllerV2 controllerV2 = new OrderControllerV2(OrderServiceV2(logTrace));
+        return new OrderControllerConcreteProxy(controllerV2, logTrace);
+    }
+```
 
+ConcreteProxyConfig class에서 위와같이 DI를 하기에 OrderServiceConcreteProxy 생성자에 super를 null 값으로 주입한다.
+OrderControllerV2인 본체는 생성자를 받기에 상속받은 class에서 생성자에 super 부모의 값을 가져오게 되어있다.
 
