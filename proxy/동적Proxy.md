@@ -75,8 +75,14 @@ CallA(), CallB() 메서드를 직접 호출하는 부분이 Method로 대체되�
         classHeloo.getMethoddddd("callB");
 
 
+```java
+TimeInvocationHandler handler = new TimeInvocationHandler(target);
 
-
+// Object proxy = Proxy.newProxyInstance(AInterface.class.getClassLoader(), new Class[]{AInterface.class}, handler);
+AInterface proxy = (AInterface) Proxy.newProxyInstance(AInterface.class.getClassLoader(), new Class[]{AInterface.class}, handler);
+proxy.call();
+```
+위 처럼 TimeInvocationHandler를 사용하여 따로 Proxy객체를 만들어주지 않고 JDK 동적 프록시를 사용해서 동적으로 만들고 TimeInvocationHandler를 공통으로 사용했다.
 
 
 
