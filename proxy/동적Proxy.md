@@ -75,6 +75,7 @@ CallA(), CallB() 메서드를 직접 호출하는 부분이 Method로 대체되�
         classHeloo.getMethoddddd("callB");
 
 
+<<<<<<< HEAD
 
 
 config파일에서 빈 생성할 때 패턴을 정의하여 생성자에 주입해준다.
@@ -96,6 +97,16 @@ if (!PatternMatchUtils.simpleMatch(patterns, methodName)) {
 handler에서 패턴을 받아 스프링에서 제공하는 PatternMatchUtils를 사용하여 검사하고 invoke를 호출하여 메소드를 실행해준다.
 이렇게 함으로써, no-log 주소에서는 로그가 남지 않는다.
 (JDK에서 제공하는 동적 프록시 사용)
+=======
+```java
+TimeInvocationHandler handler = new TimeInvocationHandler(target);
+
+// Object proxy = Proxy.newProxyInstance(AInterface.class.getClassLoader(), new Class[]{AInterface.class}, handler);
+AInterface proxy = (AInterface) Proxy.newProxyInstance(AInterface.class.getClassLoader(), new Class[]{AInterface.class}, handler);
+proxy.call();
+```
+위 처럼 TimeInvocationHandler를 사용하여 따로 Proxy객체를 만들어주지 않고 JDK 동적 프록시를 사용해서 동적으로 만들고 TimeInvocationHandler를 공통으로 사용했다.
+>>>>>>> e73b72208cb05ed0ae3b8527929479dc998eefec
 
 
 
