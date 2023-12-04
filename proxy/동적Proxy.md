@@ -77,32 +77,61 @@ CallA(), CallB() 메서드를 직접 호출하는 부분이 Method로 대체되�
 
 
 
+config파일에서 빈 생성할 때 패턴을 정의하여 생성자에 주입해준다.
+```java
+import java.lang.reflect.Proxy;
+public class DynamicProxyFilterConfig {
+    private static final String[] PATTERNS = { "request*", "order*", "save*" };
+}
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+public class LogTraceFilterHandler
+// save, request, reqe*, *est ...
+// PatternMathchUtils spring에서 제공(org.springframework.util.PatternMatchUtils)
+if (!PatternMatchUtils.simpleMatch(patterns, methodName)) {
+    return method.invoke(target, args);
+}
+```
+handler에서 패턴을 받아 스프링에서 제공하는 PatternMatchUtils를 사용하여 검사하고 invoke를 호출하여 메소드를 실행해준다.
+이렇게 함으로써, no-log 주소에서는 로그가 남지 않는다.
+(JDK에서 제공하는 동적 프록시 사용)
 
 
 
 
+=========================================================================================================
+
+CGLIB
+외부 라이브러리였는데 스프링 내부 소스 코드에 포함시켰다.
+직접 사용할 경우는 거의 없다.
+개념만 잡자
+
+CGLIB는 Enhancer를 사용해서 프록시를 생성한다.
+
+enhancer.setSuperclass(ConcreteService.class)
+구체클래스를 상속받아 프록시를 생성할 수 있다.
+
+프록시 생성 후 참조 Class
+hello.proxy.common.service.ConcreteService$$EnhancerByCGLIB$$25d6b0e3
+
+참고로 JDK 프록시는
+proxyClass=class com.sun.proxy.$Proxy1
 
 
 
+=========================================================================================================
 
+정리
 
+reflection
+class와 method의 메타정보를 얻고 동적으로 바꿔가며 호출할 수 있다.
 
+JDK 동적 프록시
+proxy를 Class로 따로 만들어 사용하지 않고 편리하게 InvocationHandler를 상속받아 사용할 수 있다.
+ + 추가 메서드 이름 필터 (no-log)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+CGLIB
+구체클래스를 상속받아 사용할 수 있다.
 
 
