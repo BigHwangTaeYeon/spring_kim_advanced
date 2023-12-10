@@ -58,19 +58,69 @@ AOP 포인트컷을 사용하여 적용대상여부를 체크한다.
     2. 프록시의 어떤 메서드가 호출 되었을 때, 어드바이스를 적용할 지 판단한다.(프록시 내부) - Method
 
 
+implementation('org.springframework.boot:spring-boot-starter-aop')
+AnnotationAwareAspectJAutoProxyCreator(자동프록시생성기)라는 빈 후처리기가 스프링 빈에 자동으로 등록된다.
+@AspectJ와 관련된 AOP 기능도 자동으로 찾아 처리해준다.
+
+### Pointcut 2가지에 사용된다.
+1. 프록시 적용 여부 판단 - 생성 단계
+    객체가 pointcut 판단에 적용 대상이면 프록시 객체를 생성한다.
+2. 어드바이스 적용 여부 판단 - 사용 단계
+    프록시 호출 시, 부가 기능인 어드바이스를 적용할 지 pointcut으로 판단한다.
+
+*** AspectJExpressionPointcut ***
+더욱 정밀한 포인트컷 세팅
+
+```java
+NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
+pointcut.setMappedNames("request*", "order*", "save*");
+```
+위와 같이 포인트컷을 세팅하면
+서버만 올려도
+AppV1Config.orderControllerV1()
+|--> AppV1Config.orderServiceV1()
+|    |--> AppV1Config.orderRepositoryV1()
+|    |<-- AppV1Config.orderRepositoryV1() time=1ms
+|<-- AppV1Config.orderServiceV1() time=13ms
+AppV1Config.orderControllerV1() time=29ms
+
+AppV1Config가 시작으로 된다.
+
+```java
+@Bean
+public Advisor advisor2(LogTrace logTrace) {
+    //pointcut
+    AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
+    // app.. - app 하위의 모든 패키지, (..) 파라미터에 상관 없다.
+    pointcut.setExpression("execution(* hello.proxy.app..*(..))");
+    
+    //...
+}
+```
+위와같이 AspectJExpressionPointcut을 사용하여 세팅해주면
+OrderControllerV3.request()
+|--> OrderServiceV3.orderItem()
+|    |--> OrderRepositoryV3.save()
+|    |<-- OrderRepositoryV3.save() time=1029ms
+|<-- OrderServiceV3.orderItem() time=1040ms
+OrderControllerV3.request() time=1060ms  
+
+의도대로 정상적으로 나온다.
+
+OrderControllerV3.noLog()
+OrderControllerV3.noLog() time=9ms   
+
+위에 처럼 nolog가 나오던 것을
+```java
+pointcut.setExpression("execution(* hello.proxy.app..*(..)) && !execution(* hello.proxy.app..noLog(..))");
+```
+표현식에 부정으로 추가해주면, 나오지 않는다.
 
 
 
-
-
-
-
-
-
-
-
-
-
+### 하나의 프록시, 여러 Advisor 적용
+프록시 자동 생성기는 프록시 하나만 생성한다.
+프록시 내부에 여러 advisor들을 포함할 수 있기에 여러개를 생성하여 비용을 낭비할 이유가 없다.
 
 
 
