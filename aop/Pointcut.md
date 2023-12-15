@@ -112,28 +112,78 @@ bean 스프링 전용 포인트컷 지시자, 빈 이름으로 지정한다.
 bean(orderService) || bean(*Repository)
 *과 같은 패턴을 사용할 수 있다.
 
-
-
-
 ### 매개변수 전달
+```java
+@Before("allMember() && args(arg,..)")
+public void logArgs3(String arg) {
+    log.info("[logArgs3] arg = {}", arg);
+}
+```
+포인트컷의 이름과 매개변수의 이름을 맞추어야 한다. 여기서는 arg로 맞추었다.
+추가로 타입이 메서드에 지정한 타입으로 제한된다.
+    위 코드에서는 메서드타입이 String으로 되어있기에
+    @Before("allMember() && args(arg,..)")를
+    @Before("allMember() && args(String,..)")으로 정의되는 것으로 이해하면 된다.
 
+```java
+@Around("allMember() && args(arg,..)")
+public Object logArgs2(ProceedingJoinPoint joinPoint, Object arg) throws Throwable {
+    log.info("[logArgs2]{}, arg = {}", joinPoint.getSignature(), arg);
+    return joinPoint.proceed();
+}
+@Before("allMember() && args(arg,..)")
+public void logArgs3(String arg) throws Throwable {
+    log.info("[logArgs2] arg = {}", arg);
+}
+```
+    * 여기서 지시자는 무엇을 사용하던 중요한게 아니다
+@Around
+[logArgs2]String hello.aop.member.MemberServiceImpl.hello(String), arg = helloA
+@Before
+[logArgs2] arg = helloA
 
+최적화 완료,
+```java
+public String hello(String param) {
+    return "ok";
+}
+memberService.hello("helloA");
+```
+"ok"라는 반환값이 아닌 param값으로 arg가 넘어와 hello method에 넘겨준 "helloA"값이 출력된다.
 
-
+logArgs1 : joinPoint.getArgs()[0]와 같이 매개변수를 전달 받는다.
+logArgs2 : args(arg,..)와 같이 매개변수를 전달 받는다.
+logArgs3 : @Before를 사용한 축약 버전이다. 추가로 타입을 String으로 제한했다.
+this : 프록시 객체를 전달 받는다.
+target : 실제 대상 객체를 전달 받는다.
+@target, @within : 타입의 애노테이션을 전달 받는다.
+@annotation : 메서드의 애노테이션을 전달 받는다.
+    여기서는 annotation.value()로 해당 애노테이션의 값을 출력하는 모습을 확인할 수 있다.
 
 ### this, target
+this : 스프링 빈 객체(Spring AOP Proxy)를 대상으로 하는 조인 포인트
+target : Target 객체(Spring AOP Proxy가 가르키는 실제 대상)를 대상으로 하는 조인 포인트
 
+this target은 타입 하나를 정확하게 지정해야한다.
+'*' 같은 패턴을 사용할 수 없다.
+부모 타입을 허용한다.
 
+Spring에서 AOP 적용하면 실제 target 객체 대신에 프롲ㄱ시 객체가 스프링 빈으로 등록된다.
+this는 스프링 빈으로 등록되어 있는 프록시 객체를 대상으로 포인트컷을 매칭한다.
+target은 실제 target객체를 대상으로 포인트컷을 매칭한다.
 
+JDK 동적 프록시는 interface(memberService)를 기반으로 프록시를 만들지만,
+CGLIB 동적 프록시는 구체 클래스(memberServiceImpl)를 기반으로 프록시를 만든다
 
 
 ### 정리
 
 
 
+@Trace 로그 출력하기
+@Retry 예외 발생시 재시도 하기
 
-
-
+10초 이상 걸리면 로그 남기고 원인 남기고 하면 문제점을 찾기, 해결하기 좋다.
 
 
 
