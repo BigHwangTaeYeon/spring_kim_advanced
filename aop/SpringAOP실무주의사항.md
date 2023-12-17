@@ -87,4 +87,14 @@
 
 2. Proxy 기술의 한계
 
+타입 캐스팅
+JDK 동적 프록시와 CGLIB를 사용해서 AOP 프록시를 만드는 방법의 장단점이 있다.
+JDK 동적 프록시는 인터페이스가 필수이고, 인터페이스 기반으로 프록시를 생성한다.
+CGLIB는 구체 클래스를 기반으로 프록시를 생성한다.
+
+스프링이 프록시를 만들때 제공하는 ProxyFactory에 proxyTargetClass 옵션에 따라 둘중 하나를 선택해서 프록시를 만들 수 있다.
+
+proxyTargetClass=false JDK 동적 프록시, 인터페이스 기반 프록시 생성
+proxyTargetClass=true CGLIB를 사용하여 구체 클래스 기반 프록시 생성
+옵션과 무관하게 인터페이스가 없으면 JDK 적용못하고 CGLIB 사용
 
