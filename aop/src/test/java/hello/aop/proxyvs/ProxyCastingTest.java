@@ -20,6 +20,8 @@ public class ProxyCastingTest {
         MemberService memberServiceProxy = (MemberService) proxyFactory.getProxy();
 
         // JDK 동적 프록시를 구현 클래스로 캐스팅 시도 실패, ClassCastException 예외 발생
+        // JDK Proxy는 MemberService interface를 구현한거지, MemberServiceImpl은 존재자체도 모른다.
+        // JDK Proxy는 Interface를 기반으로 프록시를 생성하기 때문이다.
         Assertions.assertThrows(ClassCastException.class, () -> {
             MemberServiceImpl castingMemberService = (MemberServiceImpl) memberServiceProxy;
         });
@@ -33,7 +35,10 @@ public class ProxyCastingTest {
         // 프록시를 인터페이스로 캐스팅 성공
         MemberService memberServiceProxy = (MemberService) proxyFactory.getProxy();
 
+        log.info("CGLIB : {}", memberServiceProxy.getClass());
+
         // CGLIB 동적 프록시를 구현 클래스로 캐스팅 시도 성공, ClassCastException 예외 발생
+        // CGLIB는 구현 클래스로 Proxy를 생성하기 때문에 casting 성공
         MemberServiceImpl castingMemberService = (MemberServiceImpl) memberServiceProxy;
     }
 }
